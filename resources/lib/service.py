@@ -15,6 +15,7 @@ import os
 import sys
 import xbmc
 import xbmcaddon
+import xbmcgui
 import xbmcvfs
 
 settings = xbmcaddon.Addon(id='script.common.plugin.cache')

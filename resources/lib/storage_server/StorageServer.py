@@ -65,6 +65,12 @@ class StorageServer():
             import xbmcaddon
             self.xbmcaddon = xbmcaddon
 
+        if hasattr(sys.modules["__main__"], "xbmcgui"):
+            self.xbmcgui = sys.modules["__main__"].xbmcgui
+        else:
+            import xbmcgui
+            self.xbmcgui = xbmcgui
+
         self.settings = self.xbmcaddon.Addon(id='script.common.plugin.cache')
         self.language = self.settings.getLocalizedString
 
@@ -190,8 +196,8 @@ class StorageServer():
 
     def _showMessage(self, heading, message):
         self._log(repr(type(heading)) + " - " + repr(type(message)))
-        duration = 10 * 1000
-        self.xbmc.executebuiltin((u'XBMC.Notification("%s", "%s", %s)' % (heading, message, duration)).encode("utf-8"))
+        icon = self.settings.getAddonInfo('icon')
+        self.xbmcgui.Dialog().notification(heading, message, icon, 10000, sound=False)
 
     def run(self):
         self.plugin = "StorageServer-" + self.version

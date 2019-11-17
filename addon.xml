@@ -6,6 +6,10 @@
   <extension library="default.py" point="xbmc.service" start="startup">
   </extension>
   <extension point="xbmc.addon.metadata">
+    <news>
+- convert strings.xml to strings.po
+- use new language paths ie. ../resource.language.en_gb
+    </news>
     <platform>all</platform>
     <summary lang="en_GB">Common caching api for xbmc plugins.</summary>
   </extension>

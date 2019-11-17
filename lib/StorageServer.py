@@ -68,8 +68,8 @@ class StorageServer():
         self.settings = self.xbmcaddon.Addon(id='script.common.plugin.cache')
         self.language = self.settings.getLocalizedString
 
-        self.path = self.xbmc.translatePath('special://temp/')
-        if not self.xbmcvfs.exists(self.path.decode('utf8', 'ignore')):
+        self.path = to_unicode(self.xbmc.translatePath('special://temp/'))
+        if not self.xbmcvfs.exists(self.path):
             self._log(u"Making path structure: " + self.path)
             self.xbmcvfs.mkdir(self.path)
         self.path = os.path.join(self.path, 'commoncache.db')
@@ -139,8 +139,7 @@ class StorageServer():
 
             if self._usePosixSockets():
                 self._log("POSIX", 4)
-                self.socket = os.path.join(self.xbmc.translatePath('special://temp/').decode("utf-8"), 'commoncache.socket')
-                # self.socket = os.path.join(self.xbmc.translatePath(self.settings.getAddonInfo("profile")).decode("utf-8"), 'commoncache.socket')
+                self.socket = os.path.join(to_unicode(self.xbmc.translatePath('special://temp/')), 'commoncache.socket')
                 if self.xbmcvfs.exists(self.socket) and check_stale:
                     self._log("Deleting stale socket file : " + self.socket)
                     self.xbmcvfs.delete(self.socket)
@@ -364,11 +363,11 @@ class StorageServer():
         if not locked:
             self._sqlExecute("INSERT INTO " + table + " VALUES ( %s , %s )", (name, time.time()))
             self.conn.commit()
-            self._log(u"locked: " + name.decode('utf8', 'ignore'))
+            self._log(u"locked: " + to_unicode(name))
 
             return "true"
 
-        self._log(u"failed for : " + name.decode('utf8', 'ignore'), 1)
+        self._log(u"failed for : " + to_unicode(name), 1)
         return "false"
 
     def _unlock(self, table, name):
@@ -386,10 +385,10 @@ class StorageServer():
         self._checkTable(table)
         for name in inp_data:
             if self._sqlGet(table, pre + name).strip():
-                self._log(u"Update : " + pre + name.decode('utf8', 'ignore'), 3)
+                self._log(u"Update : " + pre + to_unicode(name), 3)
                 self._sqlExecute("UPDATE " + table + " SET data = %s WHERE name = %s", (inp_data[name], pre + name))
             else:
-                self._log(u"Insert : " + pre + name.decode('utf8', 'ignore'), 3)
+                self._log(u"Insert : " + pre + to_unicode(name), 3)
                 self._sqlExecute("INSERT INTO " + table + " VALUES ( %s , %s )", (pre + name, inp_data[name]))
 
         self.conn.commit()
@@ -419,10 +418,10 @@ class StorageServer():
 
         self._checkTable(table)
         if self._sqlGet(table, name).strip():
-            self._log(u"Update : " + data.decode('utf8', 'ignore'), 3)
+            self._log(u"Update : " + to_unicode(data), 3)
             self._sqlExecute("UPDATE " + table + " SET data = %s WHERE name = %s", (data, name))
         else:
-            self._log(u"Insert : " + data.decode('utf8', 'ignore'), 3)
+            self._log(u"Insert : " + to_unicode(data), 3)
             self._sqlExecute("INSERT INTO " + table + " VALUES ( %s , %s )", (name, data))
 
         self.conn.commit()
@@ -524,10 +523,10 @@ class StorageServer():
                 cache[name]["timeout"] = 3600
 
             if cache[name]["timestamp"] > time.time() - (cache[name]["timeout"]):
-                self._log(u"Done, found cache : " + name.decode('utf8', 'ignore'))
+                self._log(u"Done, found cache : " + to_unicode(name))
                 return cache[name]["res"]
             else:
-                self._log(u"Deleting old cache : " + name.decode('utf8', 'ignore'), 1)
+                self._log(u"Deleting old cache : " + to_unicode(name), 1)
                 del (cache[name])
 
         self._log(u"Done")
@@ -564,7 +563,7 @@ class StorageServer():
             ret_val = self._getCache(name, cache)
 
             if not ret_val:
-                self._log(u"Running: " + name.decode('utf8', 'ignore'))
+                self._log(u"Running: " + to_unicode(name))
                 ret_val = funct(*args)
                 self._setCache(cache, name, ret_val)
 
@@ -604,7 +603,7 @@ class StorageServer():
                     if (cache[item]["timestamp"] > time.time() - (3600)) and not empty:
                         new_cache[item] = cache[item]
                     else:
-                        self._log(u"Deleting: " + item.decode('utf8', 'ignore'))
+                        self._log(u"Deleting: " + to_unicode(item))
 
                 self.set("cache", repr(new_cache))
                 return True
@@ -731,6 +730,14 @@ class StorageServer():
                 self.xbmc.log(u"[%s] %s : '%s'" % (self.plugin, repr(inspect.stack()[1][3]), description), self.xbmc.LOGNOTICE)
             except:
                 self.xbmc.log(u"[%s] %s : '%s'" % (self.plugin, repr(inspect.stack()[1][3]), repr(description)), self.xbmc.LOGNOTICE)
+
+
+def to_unicode(text):
+    if isinstance(text, bytes):
+        return text.decode('utf-8')
+    if sys.version_info[0] == 2 and isinstance(text, str):
+        return text.decode('utf-8')
+    return text
 
 
 # Check if this module should be run in instance mode or not.

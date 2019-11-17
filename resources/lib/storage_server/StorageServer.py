@@ -761,14 +761,11 @@ def checkInstanceMode():
     settings = xbmcaddon.Addon(id='script.common.plugin.cache')
     if settings.getSetting("autostart") == "false":
         s = StorageServer(table=False, instance=True)
-        xbmc.log(u" StorageServer Module loaded RUN(instance only)")
-
-        xbmc.log(s.plugin + u" Starting server")
-
+        xbmc.log("[%s] Module loaded (instance only), starting server ..." % s.plugin, xbmc.LOGDEBUG)
         run_async(s.run)
         return True
     else:
         return False
 
 
-checkInstanceMode()
+_ = checkInstanceMode()

@@ -3,8 +3,8 @@
     <requires>
         <import addon="xbmc.python" version="2.24.0"/>
     </requires>
-    <extension point="xbmc.service" library="default.py" start="startup"/>
-    <extension point="xbmc.python.module" library="lib"/>
+    <extension point="xbmc.service" library="resources/lib/entry_point.py" start="startup"/>
+    <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
     <extension point="xbmc.addon.metadata">
         <news>
 - convert strings.xml to strings.po

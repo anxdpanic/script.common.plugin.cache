@@ -1,3 +1,7 @@
+[B]Version 2.6.0[/B]
+- convert strings.xml to strings.po
+- use new language paths ie. ../resource.language.en_gb
+
 [B]Version 2.5.10[/B]
 - Fix self usage in non instance methods
 

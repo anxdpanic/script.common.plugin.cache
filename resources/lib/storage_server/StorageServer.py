@@ -96,7 +96,8 @@ class StorageServer():
         self.network_buffer_size = 4096
 
         if isinstance(table, str) and len(table) > 0:
-            self.table = ''.join(c for c in table if c in "%s%s" % (string.ascii_letters, string.digits))
+            self.table = ''.join(c for c in table if c in "%s%s" %
+                                 (string.ascii_letters, string.digits))
             self._log("Setting table to : %s" % self.table)
         elif table != False:
             self._log("No table defined")
@@ -129,11 +130,14 @@ class StorageServer():
             if self.die:
                 return True
         else:
-            return self.xbmc.abortRequested
+            return self.xbmc.Monitor().abortRequested()
         return False
 
     def _usePosixSockets(self):
-        if self.platform in ["win32", 'win10'] or xbmc.getCondVisibility('system.platform.android') or xbmc.getCondVisibility('system.platform.ios') or xbmc.getCondVisibility('system.platform.tvos'):
+        if (self.platform in ["win32", 'win10'] or
+                xbmc.getCondVisibility('system.platform.android') or
+                xbmc.getCondVisibility('system.platform.ios') or
+                xbmc.getCondVisibility('system.platform.tvos')):
             return False
         else:
             return True
@@ -145,7 +149,8 @@ class StorageServer():
 
             if self._usePosixSockets():
                 self._log("POSIX", 4)
-                self.socket = os.path.join(to_unicode(self.xbmc.translatePath('special://temp/')), 'commoncache.socket')
+                self.socket = os.path.join(to_unicode(self.xbmc.translatePath('special://temp/')),
+                                           'commoncache.socket')
                 if self.xbmcvfs.exists(self.socket) and check_stale:
                     self._log("Deleting stale socket file : " + self.socket)
                     self.xbmcvfs.delete(self.socket)
@@ -281,7 +286,9 @@ class StorageServer():
                     recv_buffer = sock.recv(self.network_buffer_size)
                     idle = False
                     i += 1
-                    self._log(u"got data  : " + str(i) + u" - " + repr(idle) + u" - " + str(len(data)) + u" + " + str(len(recv_buffer)) + u" | " + repr(recv_buffer)[len(recv_buffer) - 5:], 4)
+                    self._log(u"got data  : " + str(i) + u" - " + repr(idle) + u" - " +
+                              str(len(data)) + u" + " + str(len(recv_buffer)) + u" | " +
+                              repr(recv_buffer)[len(recv_buffer) - 5:], 4)
                     data += recv_buffer
                     start = time.time()
                 elif not idle:
@@ -294,7 +301,8 @@ class StorageServer():
                         idle = True
                         self._log(u"sent ACK " + str(i), 4)
                     recv_buffer = ""
-                    self._log(u"status " + repr(not idle) + u" - " + repr(data[len(data) - 2:] != u"\r\n"), 3)
+                    self._log(u"status " + repr(not idle) + u" - " +
+                              repr(data[len(data) - 2:] != u"\r\n"), 3)
 
             except socket.error as e:
                 if not e.errno in [10035, 35]:
@@ -341,7 +349,9 @@ class StorageServer():
                     else:
                         data = ""
 
-                    self._log(u"Got response " + str(i) + u" - " + str(result) + u" == " + str(len(send_buffer)) + u" | " + str(len(data)) + u" - " + repr(send_buffer)[len(send_buffer) - 5:], 3)
+                    self._log(u"Got response " + str(i) + u" - " + str(result) + u" == " +
+                              str(len(send_buffer)) + u" | " + str(len(data)) + u" - " +
+                              repr(send_buffer)[len(send_buffer) - 5:], 3)
 
             except socket.error as e:
                 self._log(u"Except error " + repr(e))
@@ -392,10 +402,12 @@ class StorageServer():
         for name in inp_data:
             if self._sqlGet(table, pre + name).strip():
                 self._log(u"Update : " + pre + to_unicode(name), 3)
-                self._sqlExecute("UPDATE " + table + " SET data = %s WHERE name = %s", (inp_data[name], pre + name))
+                self._sqlExecute("UPDATE " + table + " SET data = %s WHERE name = %s",
+                                 (inp_data[name], pre + name))
             else:
                 self._log(u"Insert : " + pre + to_unicode(name), 3)
-                self._sqlExecute("INSERT INTO " + table + " VALUES ( %s , %s )", (pre + name, inp_data[name]))
+                self._sqlExecute("INSERT INTO " + table + " VALUES ( %s , %s )",
+                                 (pre + name, inp_data[name]))
 
         self.conn.commit()
         self._log(u"Done", 3)
@@ -469,7 +481,8 @@ class StorageServer():
                 else:
                     self.curs.execute(sql, (data,))
         except sqlite3.DatabaseError as e:
-            if self.xbmcvfs.exists(self.path) and (str(e).find("file is encrypted") > -1 or str(e).find("not a database") > -1):
+            if (self.xbmcvfs.exists(self.path) and
+                    (str(e).find("file is encrypted") > -1 or str(e).find("not a database") > -1)):
                 self._log(u"Deleting broken database file")
                 self.xbmcvfs.delete(self.path)
                 self._startDB()
@@ -683,7 +696,14 @@ class StorageServer():
     def getMulti(self, name, items):
         self._log(name, 1)
         if self._connect() and self.table:
-            self._send(self.soccon, repr({"action": "get_multi", "table": self.table, "name": name, "items": items}))
+            self._send(self.soccon, repr(
+                {
+                    "action": "get_multi",
+                    "table": self.table,
+                    "name": name,
+                    "items": items
+                }
+            ))
             self._log(u"Receive", 3)
             res = self._recv(self.soccon)
 
@@ -733,9 +753,13 @@ class StorageServer():
     def _log(self, description, level=0):
         if self.dbg and self.dbglevel > level:
             try:
-                self.xbmc.log(u"[%s] %s : '%s'" % (self.plugin, repr(inspect.stack()[1][3]), description), self.xbmc.LOGNOTICE)
+                self.xbmc.log(u"[%s] %s : '%s'" %
+                              (self.plugin, repr(inspect.stack()[1][3]), description),
+                              self.xbmc.LOGNOTICE)
             except:
-                self.xbmc.log(u"[%s] %s : '%s'" % (self.plugin, repr(inspect.stack()[1][3]), repr(description)), self.xbmc.LOGNOTICE)
+                self.xbmc.log(u"[%s] %s : '%s'" %
+                              (self.plugin, repr(inspect.stack()[1][3]),
+                               repr(description)), self.xbmc.LOGNOTICE)
 
 
 def to_unicode(text):
@@ -767,7 +791,8 @@ def checkInstanceMode():
     settings = xbmcaddon.Addon(id='script.common.plugin.cache')
     if settings.getSetting("autostart") == "false":
         s = StorageServer(table=False, instance=True)
-        xbmc.log("[%s] Module loaded (instance only), starting server ..." % s.plugin, xbmc.LOGDEBUG)
+        xbmc.log("[%s] Module loaded (instance only), starting server ..." % s.plugin,
+                 xbmc.LOGDEBUG)
         run_async(s.run)
         return True
     else:

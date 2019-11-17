@@ -26,7 +26,7 @@ msgid "Debug"
 msgstr ""
 
 msgctxt "#32003"
-msgid "Autostart with XBMC"
+msgid "Start with Kodi"
 msgstr ""
 
 msgctxt "#32004"

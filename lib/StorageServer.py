@@ -1,5 +1,5 @@
 '''
-    Cache service for XBMC
+    Cache service for Kodi
     Copyright (C) 2010-2011 Tobias Ussing And Henrik Mosgaard Jensen
 
     This program is free software: you can redistribute it and/or modify

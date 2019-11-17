@@ -26,7 +26,7 @@ msgid "Debug"
 msgstr ""
 
 msgctxt "#32003"
-msgid "Autostart with XBMC"
+msgid "Start with Kodi"
 msgstr ""
 
 msgctxt "#32004"
@@ -38,9 +38,9 @@ msgid "Listen on Port (Windows only)"
 msgstr ""
 
 msgctxt "#32100"
-msgid "Error."
+msgid "Error"
 msgstr ""
 
 msgctxt "#32200"
-msgid "Failed to start commoncache. Check log."
+msgid "Failed to start script.common.plugin.cache"
 msgstr ""

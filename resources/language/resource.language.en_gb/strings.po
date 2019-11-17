@@ -38,9 +38,9 @@ msgid "Listen on Port (Windows only)"
 msgstr ""
 
 msgctxt "#32100"
-msgid "Error."
+msgid "Error"
 msgstr ""
 
 msgctxt "#32200"
-msgid "Failed to start commoncache. Check log."
+msgid "Failed to start script.common.plugin.cache"
 msgstr ""

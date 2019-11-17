@@ -213,7 +213,7 @@ class StorageServer():
             sock.bind(self.socket)
         except Exception as e:
             self._log("Exception: " + repr(e))
-            self._showMessage(self.language(100), self.language(200))
+            self._showMessage(self.language(32100), self.language(32200))
 
             return False
 

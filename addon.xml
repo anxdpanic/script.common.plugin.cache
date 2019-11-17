@@ -12,5 +12,6 @@
         </news>
         <platform>all</platform>
         <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>
+        <license>GPL-3.0-only</license>
     </extension>
 </addon>

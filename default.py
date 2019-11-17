@@ -35,6 +35,7 @@ def run():
     s.run()
     return True
 
+
 if __name__ == "__main__":
     if settings.getSetting("autostart") == "true":
         run()

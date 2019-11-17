@@ -26,10 +26,14 @@ import inspect
 import string
 import xbmc
 
-try: import sqlite
-except: pass
-try: import sqlite3
-except: pass
+try:
+    import sqlite
+except:
+    pass
+try:
+    import sqlite3
+except:
+    pass
 
 
 class StorageServer():
@@ -127,12 +131,12 @@ class StorageServer():
         else:
             return self.xbmc.abortRequested
         return False
-        
+
     def _usePosixSockets(self):
-      if self.platform in ["win32", 'win10'] or xbmc.getCondVisibility('system.platform.android') or xbmc.getCondVisibility('system.platform.ios') or xbmc.getCondVisibility('system.platform.tvos'):
-        return False
-      else:
-        return True
+        if self.platform in ["win32", 'win10'] or xbmc.getCondVisibility('system.platform.android') or xbmc.getCondVisibility('system.platform.ios') or xbmc.getCondVisibility('system.platform.tvos'):
+            return False
+        else:
+            return True
 
     def _sock_init(self, check_stale=False):
         self._log("", 2)
@@ -142,7 +146,7 @@ class StorageServer():
             if self._usePosixSockets():
                 self._log("POSIX", 4)
                 self.socket = os.path.join(self.xbmc.translatePath('special://temp/').decode("utf-8"), 'commoncache.socket')
-                #self.socket = os.path.join(self.xbmc.translatePath(self.settings.getAddonInfo("profile")).decode("utf-8"), 'commoncache.socket')
+                # self.socket = os.path.join(self.xbmc.translatePath(self.settings.getAddonInfo("profile")).decode("utf-8"), 'commoncache.socket')
                 if self.xbmcvfs.exists(self.socket) and check_stale:
                     self._log("Deleting stale socket file : " + self.socket)
                     self.xbmcvfs.delete(self.socket)
@@ -186,7 +190,7 @@ class StorageServer():
             res = self._unlock(data["table"], data["name"])
 
         if len(res) > 0:
-            self._log("Got response: " + str(len(res))  + " - " + str(repr(res))[0:50], 3)
+            self._log("Got response: " + str(len(res)) + " - " + str(repr(res))[0:50], 3)
             self._send(self.clientsocket, repr(res))
 
         self._log("Done", 3)
@@ -198,7 +202,7 @@ class StorageServer():
 
     def run(self):
         self.plugin = "StorageServer-" + self.version
-        #self.xbmc.log(self.plugin + " Storage Server starting " + self.path)
+        # self.xbmc.log(self.plugin + " Storage Server starting " + self.path)
         self._sock_init(True)
 
         if not self._startDB():
@@ -486,7 +490,7 @@ class StorageServer():
 
     def _evaluate(self, data):
         try:
-            data = eval(data) # Test json.loads vs eval
+            data = eval(data)  # Test json.loads vs eval
             return data
         except:
             self._log(u"Couldn't evaluate message : " + repr(data))
@@ -530,7 +534,7 @@ class StorageServer():
                 return cache[name]["res"]
             else:
                 self._log(u"Deleting old cache : " + name.decode('utf8', 'ignore'), 1)
-                del(cache[name])
+                del (cache[name])
 
         self._log(u"Done")
         return False
@@ -543,12 +547,12 @@ class StorageServer():
             cache[name] = {"timestamp": time.time(),
                            "timeout": self.timeout,
                            "res": ret_val}
-            self._log(u"Saving cache: " + name  + str(repr(cache[name]["res"]))[0:50], 1)
+            self._log(u"Saving cache: " + name + str(repr(cache[name]["res"]))[0:50], 1)
             self.set("cache" + name, repr(cache))
         self._log(u"Done")
         return ret_val
 
-### EXTERNAL FUNCTIONS ###
+    ### EXTERNAL FUNCTIONS ###
     soccon = False
     table = False
 
@@ -734,14 +738,18 @@ class StorageServer():
             except:
                 self.xbmc.log(u"[%s] %s : '%s'" % (self.plugin, repr(inspect.stack()[1][3]), repr(description)), self.xbmc.LOGNOTICE)
 
+
 # Check if this module should be run in instance mode or not.
 __workersByName = {}
+
+
 def run_async(func, *args, **kwargs):
     from threading import Thread
     worker = Thread(target=func, args=args, kwargs=kwargs)
     __workersByName[worker.getName()] = worker
     worker.start()
     return worker
+
 
 def checkInstanceMode():
     if hasattr(sys.modules["__main__"], "xbmcaddon"):
@@ -760,5 +768,6 @@ def checkInstanceMode():
         return True
     else:
         return False
+
 
 checkInstanceMode()

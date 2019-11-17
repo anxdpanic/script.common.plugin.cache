@@ -11,6 +11,7 @@
     See LICENSES/GPL-3.0-only.txt for more information.
 """
 
+import os
 import sys
 import xbmc
 import xbmcaddon
@@ -22,15 +23,17 @@ dbglevel = 3
 
 
 def run():
-    sys.path = [settings.getAddonInfo('path') + "/lib"] + sys.path
-    import StorageServer
-    s = StorageServer.StorageServer(False)
-    xbmc.log(" StorageServer Module loaded RUN")
-    xbmc.log(s.plugin + " Starting server")
-    s.run()
-    return True
-
-
-if __name__ == "__main__":
     if settings.getSetting("autostart") == "true":
-        run()
+
+        addon_path = settings.getAddonInfo('path')
+        if isinstance(addon_path, bytes):
+            addon_path = addon_path.decode('utf-8')
+
+        sys.path = [os.path.join(addon_path, "resources", "lib", "storage_server")] + sys.path
+
+        from storage_server import StorageServer
+        s = StorageServer.StorageServer(False)
+
+        xbmc.log("[%s] Service loaded, starting server ..." % s.plugin, xbmc.LOGDEBUG)
+
+        s.run()

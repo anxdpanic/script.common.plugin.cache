@@ -33,6 +33,11 @@ except ImportError:
     except ImportError:
         sqlite = None
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 PY3 = sys.version_info[0] >= 3
 
 
@@ -522,14 +527,37 @@ class StorageServer:
             if isinstance(params, dict):
                 for key in sorted(params.keys()):
                     if key not in ["new_results_function"]:
-                        keyhash.update("'%s'='%s'" % (key, params[key]))
+                        val = params[key]
+                        if not isinstance(val, basestring):
+                            val = str(val)
+                        if PY3:
+                            if isinstance(key, str):
+                                key = key.encode('utf-8')
+                            if isinstance(val, str):
+                                val = val.encode('utf-8')
+                            key_val_pair = b"'%s'='%s'" % (key, val)
+                        else:
+                            key_val_pair = "'%s'='%s'" % (key, val)
+                        keyhash.update(key_val_pair)
             elif isinstance(params, list):
-                keyhash.update(",".join(["%s" % el for el in params]))
+                if PY3:
+                    hash_list = []
+                    for el in params:
+                        if not isinstance(el, basestring):
+                            el = str(el)
+                        if isinstance(el, str):
+                            el = el.encode('utf-8')
+                        hash_list.append(el)
+                    keyhash.update(b",".join([b"%s" % el for el in hash_list]))
+                else:
+                    keyhash.update(",".join(["%s" % el for el in params]))
             else:
-                try:
-                    keyhash.update(params)
-                except:
-                    keyhash.update(str(params))
+                if not isinstance(params, basestring):
+                    params = str(params)
+                if PY3:
+                    if isinstance(params, str):
+                        params = params.encode('utf-8')
+                keyhash.update(params)
 
         name += "|" + keyhash.hexdigest() + "|"
 

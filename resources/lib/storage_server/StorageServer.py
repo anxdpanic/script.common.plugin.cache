@@ -11,13 +11,14 @@
     See LICENSES/GPL-3.0-only.txt for more information.
 """
 
-import os
-import sys
-import socket
-import time
 import hashlib
 import inspect
+import os
+import socket
 import string
+import sys
+import time
+
 import xbmc
 
 try:

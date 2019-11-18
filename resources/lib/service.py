@@ -19,8 +19,6 @@ import xbmcgui
 import xbmcvfs
 
 settings = xbmcaddon.Addon(id='script.common.plugin.cache')
-dbg = settings.getSetting("debug") == "true"
-dbglevel = 3
 
 
 def run():

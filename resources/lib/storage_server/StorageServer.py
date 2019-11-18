@@ -33,6 +33,8 @@ except ImportError:
     except ImportError:
         sqlite = None
 
+PY3 = sys.version_info[0] >= 3
+
 
 class StorageServer:
     def __init__(self, table=None, timeout=24, instance=False):
@@ -275,6 +277,8 @@ class StorageServer:
                     recv_buffer = sock.recv(self.network_buffer_size)
                     idle = False
                     i += 1
+                    if PY3:
+                        recv_buffer = recv_buffer.decode('utf-8')
                     self._log(u"got data  : " + str(i) + u" - " + repr(idle) + u" - " +
                               str(len(data)) + u" + " + str(len(recv_buffer)) + u" | " +
                               repr(recv_buffer)[len(recv_buffer) - 5:])
@@ -282,11 +286,17 @@ class StorageServer:
                     start = time.time()
                 elif not idle:
                     if data[len(data) - 2:] == "\r\n":
-                        sock.send("COMPLETE\r\n" + (" " * (15 - len("COMPLETE\r\n"))))
+                        content = "COMPLETE\r\n" + (" " * (15 - len("COMPLETE\r\n")))
+                        if PY3:
+                            content = content.encode('utf-8')
+                        sock.send(content)
                         idle = True
                         self._log(u"sent COMPLETE " + str(i))
                     elif len(recv_buffer) > 0:
-                        sock.send("ACK\r\n" + (" " * (15 - len("ACK\r\n"))))
+                        content = "ACK\r\n" + (" " * (15 - len("ACK\r\n")))
+                        if PY3:
+                            content = content.encode('utf-8')
+                        sock.send(content)
                         idle = True
                         self._log(u"sent ACK " + str(i))
                     self._log(u"status " + repr(not idle) + u" - " +
@@ -321,7 +331,8 @@ class StorageServer:
                         send_buffer = data[:self.network_buffer_size]
                     else:
                         send_buffer = data + "\r\n"
-
+                    if PY3:
+                        send_buffer = send_buffer.encode('utf-8')
                     result = sock.send(send_buffer)
                     i += 1
                     idle = False
@@ -330,6 +341,8 @@ class StorageServer:
                     status = ""
                     while status.find("COMPLETE\r\n") == -1 and status.find("ACK\r\n") == -1:
                         status = sock.recv(15)
+                        if PY3:
+                            status = status.decode('utf-8')
                         i -= 1
 
                     idle = True

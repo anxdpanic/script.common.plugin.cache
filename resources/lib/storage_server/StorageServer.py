@@ -36,11 +36,6 @@ except ImportError:
 
 class StorageServer:
     def __init__(self, table=None, timeout=24, instance=False):
-        self.version = u"2.5.4"
-        self.plugin = u"StorageClient-" + self.version
-        self.instance = instance
-        self.die = False
-
         if hasattr(sys.modules["__main__"], "xbmc"):
             self.xbmc = sys.modules["__main__"].xbmc
         else:
@@ -65,9 +60,15 @@ class StorageServer:
             import xbmcgui
             self.xbmcgui = xbmcgui
 
+        self.instance = instance
+        self.die = False
+
         self.settings = self.xbmcaddon.Addon(id='script.common.plugin.cache')
         self.language = self.settings.getLocalizedString
 
+        self.version = to_unicode(self.settings.getAddonInfo('version'))
+        self.plugin = u"StorageClient-" + self.version
+        
         self.path = to_unicode(self.xbmc.translatePath('special://temp/'))
         if not self.xbmcvfs.exists(self.path):
             self._log(u"Making path structure: " + self.path)

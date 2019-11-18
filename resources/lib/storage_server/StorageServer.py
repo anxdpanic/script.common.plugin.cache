@@ -100,10 +100,10 @@ class StorageServer:
             self.table = ''.join(c for c in table if c in "%s%s" %
                                  (string.ascii_letters, string.digits))
             self._log("Setting table to : %s" % self.table)
-        elif table != False:
+        elif table is False:
             self._log("No table defined")
 
-        self.setCacheTimeout(timeout)
+        self.timeout = float(timeout) * 3600
 
     def _startDB(self):
         try:
@@ -281,6 +281,7 @@ class StorageServer:
         self._log(u"", 3)
         i = 0
         start = time.time()
+        recv_buffer = ""
         while data[len(data) - 2:] != "\r\n" or not idle:
             try:
                 if idle:
@@ -301,12 +302,11 @@ class StorageServer:
                         sock.send("ACK\r\n" + (" " * (15 - len("ACK\r\n"))))
                         idle = True
                         self._log(u"sent ACK " + str(i), 4)
-                    recv_buffer = ""
                     self._log(u"status " + repr(not idle) + u" - " +
                               repr(data[len(data) - 2:] != u"\r\n"), 3)
 
             except socket.error as e:
-                if not e.errno in [10035, 35]:
+                if e.errno not in [10035, 35]:
                     self._log(u"Except error " + repr(e))
 
                 if e.errno in [22]:  # We can't fix this.
@@ -323,6 +323,7 @@ class StorageServer:
         idle = True
         status = ""
         self._log(str(len(data)) + u" - " + repr(data)[0:20], 3)
+        result = ""
         i = 0
         start = time.time()
         while len(data) > 0 or not idle:
@@ -565,7 +566,7 @@ class StorageServer:
         self._log(u"Done")
         return ret_val
 
-    ### EXTERNAL FUNCTIONS ###
+    # EXTERNAL FUNCTIONS
     soccon = False
     table = False
 

@@ -68,7 +68,7 @@ class StorageServer:
 
         self.version = to_unicode(self.settings.getAddonInfo('version'))
         self.plugin = u"StorageClient-" + self.version
-        
+
         self.path = to_unicode(self.xbmc.translatePath('special://temp/'))
         if not self.xbmcvfs.exists(self.path):
             self._log(u"Making path structure: " + self.path)

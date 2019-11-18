@@ -7,8 +7,11 @@
     <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
     <extension point="xbmc.addon.metadata">
         <news>
+- Kodi 19 / Python 3 ready
 - convert strings.xml to strings.po
 - use new language paths ie. ../resource.language.en_gb
+- refactor
+- housekeeping
         </news>
         <platform>all</platform>
         <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>

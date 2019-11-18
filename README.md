@@ -1,4 +1,4 @@
-![Common plugin cache](icon.png)
+<img src="icon.png" width="256" height="256" />
 # Common plugin cache 
 ###### script.common.plugin.cache
 

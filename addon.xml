@@ -14,6 +14,9 @@
 - housekeeping
 - replace icon to resolve transparency issue
         </news>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
         <platform>all</platform>
         <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>
         <license>GPL-3.0-only</license>

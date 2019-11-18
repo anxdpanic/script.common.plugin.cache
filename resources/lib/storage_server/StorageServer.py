@@ -619,7 +619,7 @@ class StorageServer():
             if cache:
                 new_cache = {}
                 for item in cache:
-                    if (cache[item]["timestamp"] > time.time() - (3600)) and not empty:
+                    if (cache[item]["timestamp"] > (time.time() - 3600)) and not empty:
                         new_cache[item] = cache[item]
                     else:
                         self._log(u"Deleting: " + to_unicode(item))

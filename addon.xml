@@ -12,6 +12,7 @@
 - use new language paths ie. ../resource.language.en_gb
 - refactor
 - housekeeping
+- replace icon to resolve transparency issue
         </news>
         <platform>all</platform>
         <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>

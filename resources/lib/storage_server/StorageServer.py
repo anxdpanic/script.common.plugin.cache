@@ -73,6 +73,8 @@ class StorageServer:
         self.settings = self.xbmcaddon.Addon(id='script.common.plugin.cache')
         self.language = self.settings.getLocalizedString
 
+        self.dbg = self.settings.getSetting("debug") == "true"
+
         self.version = to_unicode(self.settings.getAddonInfo('version'))
         self.plugin = u"StorageClient-" + self.version
 
@@ -202,7 +204,6 @@ class StorageServer:
 
     def run(self):
         self.plugin = "StorageServer-" + self.version
-        # self.xbmc.log(self.plugin + " Storage Server starting " + self.path)
         self._sock_init(True)
 
         if not self._startDB():
@@ -776,14 +777,15 @@ class StorageServer:
         self.timeout = float(timeout) * 3600
 
     def _log(self, description):
-        try:
-            self.xbmc.log(u"[%s] %s : '%s'" %
-                          (self.plugin, repr(inspect.stack()[1][3]), description),
-                          self.xbmc.LOGDEBUG)
-        except:
-            self.xbmc.log(u"[%s] %s : '%s'" %
-                          (self.plugin, repr(inspect.stack()[1][3]),
-                           repr(description)), self.xbmc.LOGDEBUG)
+        if self.dbg:
+            try:
+                self.xbmc.log(u"[%s] %s : '%s'" %
+                              (self.plugin, repr(inspect.stack()[1][3]), description),
+                              self.xbmc.LOGDEBUG)
+            except:
+                self.xbmc.log(u"[%s] %s : '%s'" %
+                              (self.plugin, repr(inspect.stack()[1][3]),
+                               repr(description)), self.xbmc.LOGDEBUG)
 
 
 def to_unicode(text):

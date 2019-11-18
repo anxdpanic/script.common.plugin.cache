@@ -30,7 +30,7 @@ except:
     pass
 
 
-class StorageServer():
+class StorageServer:
     def __init__(self, table=None, timeout=24, instance=False):
         self.version = u"2.5.4"
         self.plugin = u"StorageClient-" + self.version

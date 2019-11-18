@@ -21,14 +21,17 @@ import time
 
 import xbmc
 
-try:
-    import sqlite
-except:
-    pass
+sqlite3 = None
+sqlite = None
+
 try:
     import sqlite3
-except:
-    pass
+except ImportError:
+    sqlite3 = None
+    try:
+        import sqlite
+    except ImportError:
+        sqlite = None
 
 
 class StorageServer:
@@ -83,9 +86,9 @@ class StorageServer:
 
         self.socket = ""
         self.clientsocket = False
-        self.sql2 = False
-        self.sql3 = False
-        self.abortRequested = False
+        self.sql2 = True if sqlite else False
+        self.sql3 = True if sqlite3 else False
+
         self.daemon_start_time = time.time()
         if self.instance:
             self.idle = int(self.settings.getSetting("timeout"))
@@ -93,7 +96,6 @@ class StorageServer:
             self.idle = 3
 
         self.platform = sys.platform
-        self.modules = sys.modules
         self.network_buffer_size = 4096
 
         if isinstance(table, str) and len(table) > 0:
@@ -107,12 +109,10 @@ class StorageServer:
 
     def _startDB(self):
         try:
-            if "sqlite3" in self.modules:
-                self.sql3 = True
+            if self.sql3:
                 self._log("sql3 - " + self.path, 2)
                 self.conn = sqlite3.connect(self.path, check_same_thread=False)
-            elif "sqlite" in self.modules:
-                self.sql2 = True
+            elif self.sql2:
                 self._log("sql2 - " + self.path, 2)
                 self.conn = sqlite.connect(self.path)
             else:

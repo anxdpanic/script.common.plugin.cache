@@ -1,3 +1,6 @@
+[B]Version 2.6.1[/B]
+[fix] ignore encoding issues for socket data
+
 [B]Version 2.6.0[/B]
 - Kodi 19 / Python 3 ready
 - convert strings.xml to strings.po

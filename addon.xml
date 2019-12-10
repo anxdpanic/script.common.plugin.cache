@@ -7,12 +7,8 @@
     <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
     <extension point="xbmc.addon.metadata">
         <news>
-- Kodi 19 / Python 3 ready
-- convert strings.xml to strings.po
-- use new language paths ie. ../resource.language.en_gb
-- refactor
-- housekeeping
-- replace icon to resolve transparency issue
+[fix] shutdown taking longer than 5 seconds
+[fix] ignore encoding issues for socket data
         </news>
         <assets>
             <icon>icon.png</icon>

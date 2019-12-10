@@ -11,6 +11,7 @@
     See LICENSES/GPL-3.0-only.txt for more information.
 """
 
+from contextlib import closing
 import hashlib
 import inspect
 import os
@@ -68,7 +69,9 @@ class StorageServer:
             self.xbmcgui = xbmcgui
 
         self.instance = instance
+        self._sock = None
         self.die = False
+        self.force_abort = False
 
         self.settings = self.xbmcaddon.Addon(id='script.common.plugin.cache')
         self.language = self.settings.getLocalizedString
@@ -127,6 +130,11 @@ class StorageServer:
             return False
 
     def _aborting(self):
+        if self.force_abort:
+            if self._sock:
+                self._sock.close()
+            return True
+
         if self.instance:
             if self.die:
                 return True
@@ -210,60 +218,61 @@ class StorageServer:
             self._startDB()
 
         if self._usePosixSockets():
-            sock = socket.socket(socket.AF_UNIX)
+            self._sock = socket.socket(socket.AF_UNIX)
         else:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        try:
-            sock.bind(self.socket)
-        except Exception as e:
-            self._log("Exception: " + repr(e))
-            self._showMessage(self.language(32100), self.language(32200))
-
-            return False
-
-        sock.listen(1)
-        sock.setblocking(0)
-
-        idle_since = time.time()
-        waiting = 0
-        while not self._aborting():
-            if waiting == 0:
-                self._log("accepting")
-                waiting = 1
+        with closing(self._sock) as open_socket:
             try:
-                (self.clientsocket, address) = sock.accept()
-                if waiting == 2:
-                    self._log("Waking up, slept for %s seconds." % int(time.time() - idle_since))
-                waiting = 0
-            except socket.error as e:
-                if e.errno == 11 or e.errno == 10035 or e.errno == 35:
-                    # There has to be a better way to accomplish this.
-                    if idle_since + self.idle < time.time():
-                        if self.instance:
-                            self.die = True
-                        if waiting == 1:
-                            self._log("Idle for %s seconds. Going to sleep. zzzzzzzz " % self.idle)
-                        time.sleep(0.5)
-                        waiting = 2
-                    continue
-                self._log("EXCEPTION : " + repr(e))
-            except:
-                pass
+                open_socket.bind(self.socket)
+            except Exception as e:
+                self._log("Exception: " + repr(e))
+                self._showMessage(self.language(32100), self.language(32200))
 
-            if waiting:
-                self._log("Continue : " + repr(waiting))
-                continue
+                return False
 
-            data = self._recieveData()
-            self._runCommand(data)
+            open_socket.listen(1)
+            open_socket.setblocking(0)
+
             idle_since = time.time()
+            waiting = 0
+            while not self._aborting():
+                if waiting == 0:
+                    self._log("accepting")
+                    waiting = 1
+                try:
+                    (self.clientsocket, address) = open_socket.accept()
+                    if waiting == 2:
+                        self._log("Waking up, slept for %s seconds." % int(time.time() - idle_since))
+                    waiting = 0
+                except socket.error as e:
+                    if e.errno == 11 or e.errno == 10035 or e.errno == 35:
+                        # There has to be a better way to accomplish this.
+                        if idle_since + self.idle < time.time():
+                            if self.instance:
+                                self.die = True
+                            if waiting == 1:
+                                self._log("Idle for %s seconds. Going to sleep. zzzzzzzz " % self.idle)
+                            time.sleep(0.5)
+                            waiting = 2
+                        continue
+                    self._log("EXCEPTION : " + repr(e))
+                except:
+                    pass
 
-            self._log("Done")
+                if waiting:
+                    self._log("Continue : " + repr(waiting))
+                    continue
 
-        self._log("Closing down")
-        sock.close()
-        # self.conn.close()
+                data = self._recieveData()
+                self._runCommand(data)
+                idle_since = time.time()
+
+                self._log("Done")
+
+            self._log("Closing down")
+            # self.conn.close()
+
         if self._usePosixSockets():
             if self.xbmcvfs.exists(self.socket):
                 self._log("Deleting socket file")

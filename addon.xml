@@ -7,6 +7,7 @@
     <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
     <extension point="xbmc.addon.metadata">
         <news>
+[fix] shutdown taking longer than 5 seconds
 [fix] ignore encoding issues for socket data
         </news>
         <assets>

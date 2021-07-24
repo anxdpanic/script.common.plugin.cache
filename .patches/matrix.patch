@@ -1,0 +1,29 @@
+From 6035aa2ee9034b17ff4f40a6c36ebd46a1ba1f2d Mon Sep 17 00:00:00 2001
+From: anxdpanic <anxdpanic@gmail.com>
+Date: Fri, 14 Feb 2020 19:30:14 -0500
+Subject: [PATCH] =?UTF-8?q?=EF=BB=BFmatrix=20repository=20requirements?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ addon.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/addon.xml b/addon.xml
+index 00b47bc..bf90ca3 100644
+--- a/addon.xml
++++ b/addon.xml
+@@ -3,7 +3,7 @@
+     <requires>
+-        <import addon="xbmc.python" version="2.24.0"/>
++        <import addon="xbmc.python" version="3.0.0"/>
+     </requires>
+-    <extension point="xbmc.service" library="resources/lib/entry_point.py" start="startup"/>
++    <extension point="xbmc.service" library="resources/lib/entry_point.py"/>
+     <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
+     <extension point="xbmc.addon.metadata">
+         <news>
+-- 
+2.26.2.windows.1
+

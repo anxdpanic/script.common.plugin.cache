@@ -87,8 +87,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.variables.outputs.version }}
-          release_name: v${{ steps.variables.outputs.version }}
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
           body: ${{ steps.variables.outputs.changes }}
           draft: false
           prerelease: ${{ steps.release.outputs.pre-release }}

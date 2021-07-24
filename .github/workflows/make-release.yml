@@ -34,14 +34,16 @@ jobs:
         run: |
           sudo apt-get install libxml2-utils xmlstarlet zip
 
-      - name: Get Changelog
-        id: changelog
+      - name: Get Variables
+        id: variables
         run: |
           changes=$(xmlstarlet sel -t -v '//news' -n addon.xml)
           changes="${changes//'%'/'%25'}"
           changes="${changes//$'\n'/'%0A'}"
           changes="${changes//$'\r'/'%0D'}"
           echo ::set-output name=changes::$changes
+          version=$(xmlstarlet sel -t -v 'string(/addon/@version)' addon.xml)
+          echo ::set-output name=version::$version
         working-directory: ${{ github.event.repository.name }}
 
       - name: Create Zip (Jarvis)
@@ -53,8 +55,7 @@ jobs:
           mv .git ..
           rm -rf .??*
           rm *.md
-          version=$(xmlstarlet sel -t -v 'string(/addon/@version)' addon.xml)
-          filename=${{ github.event.repository.name }}-${version}.zip
+          filename=${{ github.event.repository.name }}-${{ steps.variables.outputs.version }}.zip
           cd ..
           zip -r $filename ${{ github.event.repository.name }}
           mv .git ${{ github.event.repository.name }}
@@ -71,8 +72,7 @@ jobs:
           mv .git ..
           rm -rf .??*
           rm *.md
-          version=$(xmlstarlet sel -t -v 'string(/addon/@version)' addon.xml)
-          xmlstarlet ed -L -u '/addon/@version' -v "${version}+matrix.1" addon.xml
+          xmlstarlet ed -L -u '/addon/@version' -v "${{ steps.variables.outputs.version }}+matrix.1" addon.xml
           version=$(xmlstarlet sel -t -v 'string(/addon/@version)' addon.xml)
           filename=${{ github.event.repository.name }}-${version}.zip
           cd ..
@@ -87,9 +87,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.changes }}
+          tag_name: v${{ steps.variables.outputs.version }}
+          release_name: v${{ steps.variables.outputs.version }}
+          body: ${{ steps.variables.outputs.changes }}
           draft: false
           prerelease: ${{ steps.release.outputs.pre-release }}
 

@@ -13,9 +13,9 @@
             <icon>icon.png</icon>
         </assets>
         <platform>all</platform>
-        <description lang="en_GB">A common caching API for Kodi add-ons.</description>
-        <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>
         <license>GPL-3.0-only</license>
         <source>https://github.com/anxdpanic/script.common.plugin.cache</source>
+        <summary lang="en_GB">A common caching API for Kodi add-ons.</summary>
+        <description lang="en_GB">A common caching API for Kodi add-ons.</description>
     </extension>
 </addon>

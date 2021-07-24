@@ -7,8 +7,7 @@
     <extension point="xbmc.python.module" library="resources/lib/storage_server/"/>
     <extension point="xbmc.addon.metadata">
         <news>
-[fix] shutdown taking longer than 5 seconds
-[fix] ignore encoding issues for socket data
+[fix] use xbmcvfs.translatePath when available, xbmc.translatePath deprecated(Matrix) and removed(Nexus) |contrib: Gujal00|
         </news>
         <assets>
             <icon>icon.png</icon>
